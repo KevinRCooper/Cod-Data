@@ -3,15 +3,9 @@ import { useDropzone } from "react-dropzone";
 import { GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { extractTableFromHtml } from "@/utils/htmlTableProcessor";
-
-// If you prefer to define an interface for your row
-interface ITableRow {
-    id: number;
-    [key: string]: number | string;
-}
-
+import { TableRow } from "@/types/TableRow.types";
 interface DropzoneProps {
-    onDataUploaded: (columns: GridColDef[], rows: ITableRow[]) => void;
+    onDataUploaded: (columns: GridColDef[], rows: TableRow[]) => void;
 }
 
 export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
@@ -76,7 +70,7 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
         );
 
         // Build rows
-        const rowData: ITableRow[] = Array.from(table.querySelectorAll("tr"))
+        const rowData: TableRow[] = Array.from(table.querySelectorAll("tr"))
             .slice(1) // skip header row
             .map((tr, rowIndex) => {
                 const cells = Array.from(tr.querySelectorAll("td")).map((td) => {
@@ -84,7 +78,7 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
                     return isNumeric(cellValue) ? Number(cellValue) : cellValue || "";
                 });
 
-                const row: ITableRow = { id: rowIndex + 1 };
+                const row: TableRow = { id: rowIndex + 1 };
                 headers.forEach((header, index) => {
                     row[header] = cells[index];
                 });
