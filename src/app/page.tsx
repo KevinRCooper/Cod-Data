@@ -48,7 +48,7 @@ export default function HomePage() {
 
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "table_data.csv");
+    link.setAttribute("download", "cod_data.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -70,11 +70,11 @@ export default function HomePage() {
         <Typography variant="body1" paragraph>
           To obtain the report, submit a new request to &nbsp;
           <Link href="https://support.activision.com/privacy" color="inherit">
-          Activision`s Privacy & Data Protection portal
+            Activision`s Privacy & Data Protection portal
           </Link>
           .
         </Typography>
-        
+
       </Paper>
       <Grid container spacing={3} justifyContent="center">
         {isDropzoneVisible && (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
+import { ReactNode } from "react";
 import { Roboto } from 'next/font/google';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "Analyzing Call of Duty data",
 };
 
-export default function RootLayout(props: { children: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) {
+export default function RootLayout(props: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={roboto.variable}>
