@@ -1,44 +1,14 @@
-import React from "react";
-import {useDropzone} from "react-dropzone";
-import {GridColDef} from "@mui/x-data-grid";
+import { TableRow } from "@/types/TableRow.types";
+import { extractTableFromHtml, parseHtmlFile, parseZipFile } from "@/utils/htmlTableProcessor";
+import { calculateColumnWidth, formatCellValue, isNumeric } from "@/utils/utilities";
 import Paper from "@mui/material/Paper";
-import {extractTableFromHtml, parseHtmlFile, parseZipFile} from "@/utils/htmlTableProcessor";
-import {TableRow} from "@/types/TableRow.types";
+import { GridColDef } from "@mui/x-data-grid";
+import React from "react";
+import { useDropzone } from "react-dropzone";
+import { UploadProps } from "./Upload.types";
 
-interface DropzoneProps {
-    onDataUploaded: (columns: GridColDef[], rows: TableRow[]) => void;
-}
-
-export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
+export const Upload = ({ onDataUploaded }: UploadProps) => {
     const overrideNoFormatColumns = ["Match ID", "Another Column"];
-
-    const isNumeric = (value: unknown): boolean => {
-        return typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value.trim());
-    };
-
-    const calculateColumnWidth = (
-        header: string,
-        firstRowValue: unknown
-    ): number => {
-        const padding = 20;
-        const baseWidth = 10;
-        const headerLength = header.length;
-        const valueLength = firstRowValue ? firstRowValue.toString().length : 0;
-        const maxLength = Math.max(headerLength, valueLength);
-        return maxLength * baseWidth + padding;
-    };
-
-    const formatCellValue = (value: unknown, column: string) => {
-        if (overrideNoFormatColumns.includes(column)) {
-            return typeof value === "undefined" ? "" : value;
-        }
-
-        if (typeof value === "number") {
-            return new Intl.NumberFormat("en-US").format(value);
-        }
-
-        return (value as string) || "";
-    };
 
     const parseTable = (table: HTMLTableElement) => {
         const headers = Array.from(table.querySelectorAll("th")).map(
@@ -69,8 +39,8 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
             type: isNumeric(firstRow[header]) ? "number" : "string",
             sortable: true,
             renderCell: (params) => {
-                const formattedVal = formatCellValue(params.value, header);
-                return <>{formattedVal}</>;
+                const formattedVal = formatCellValue(params.value, header, overrideNoFormatColumns);
+                return <>{String(formattedVal)}</>;
             },
         }));
 
@@ -128,4 +98,4 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
             <p>Drag and drop an HTML/ZIP file here, or click to select one</p>
         </Paper>
     );
-}
+};
