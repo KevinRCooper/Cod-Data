@@ -1,40 +1,16 @@
 import React from "react";
-import { useDropzone } from "react-dropzone";
-import { GridColDef } from "@mui/x-data-grid";
+import {useDropzone} from "react-dropzone";
+import {GridColDef} from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import { extractTableFromHtml } from "@/utils/htmlTableProcessor";
-import { TableRow } from "@/types/TableRow.types";
+import {extractTableFromHtml, parseHtmlFile, parseZipFile} from "@/utils/htmlTableProcessor";
+import {TableRow} from "@/types/TableRow.types";
+
 interface DropzoneProps {
     onDataUploaded: (columns: GridColDef[], rows: TableRow[]) => void;
 }
 
 export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
     const overrideNoFormatColumns = ["Match ID", "Another Column"];
-
-    const parseHtmlFile = (file: File): Promise<Document> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-                if (event.target?.result) {
-                    const parser = new DOMParser();
-                    const htmlDoc = parser.parseFromString(
-                        event.target.result as string,
-                        "text/html"
-                    );
-                    resolve(htmlDoc);
-                } else {
-                    reject(new Error("Could not read file"));
-                }
-            };
-
-            reader.onerror = () => {
-                reject(new Error("Error reading file"));
-            };
-
-            reader.readAsText(file);
-        });
-    };
 
     const isNumeric = (value: unknown): boolean => {
         return typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value.trim());
@@ -101,10 +77,18 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
         return { columns, rows: rowData };
     };
 
+    const parseFile = async (file: File): Promise<Document> => {
+        if (file.name.toLowerCase().endsWith(".zip")) {
+            return await parseZipFile(file);
+        } else {
+            return await parseHtmlFile(file);
+        }
+    };
+
     const onDrop = async (acceptedFiles: File[]) => {
         for (const file of acceptedFiles) {
             try {
-                const parsedContent = await parseHtmlFile(file);
+                const parsedContent = await parseFile(file);
                 const extractedTable = extractTableFromHtml(parsedContent);
 
                 if (extractedTable) {
@@ -124,7 +108,10 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
 
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
-        accept: { "text/html": [".html"] },
+        accept: {
+            "text/html": [".html"],
+            "application/zip": [".zip"],
+        },
     });
 
     return (
@@ -138,7 +125,7 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
             {...getRootProps()}
         >
             <input {...getInputProps()} />
-            <p>Drag and drop an HTML file here, or click to select one</p>
+            <p>Drag and drop an HTML/ZIP file here, or click to select one</p>
         </Paper>
     );
 }

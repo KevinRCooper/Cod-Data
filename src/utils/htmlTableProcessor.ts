@@ -1,4 +1,6 @@
 // Loads an HTML file from the specified file upload.
+import JSZip from "jszip";
+
 export const parseHtmlFile = (file: File): Promise<Document> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -18,6 +20,31 @@ export const parseHtmlFile = (file: File): Promise<Document> => {
     };
 
     reader.readAsText(file);
+  });
+};
+
+export const parseZipFile = (file: File): Promise<Document> => {
+  return new Promise((resolve, reject) => {
+    const zip = new JSZip();
+    zip.loadAsync(file).then((zipFile) => {
+      const htmlFiles = Object.values(zipFile.files).filter((zipEntry) =>
+          zipEntry.name.endsWith(".html")
+      );
+
+      if (htmlFiles.length === 0) {
+        reject(new Error("No HTML files found in ZIP archive"));
+        return;
+      }
+
+      htmlFiles[0].async("string").then((htmlContent) => {
+        const parser = new DOMParser();
+        resolve(parser.parseFromString(htmlContent, "text/html"));
+      }).catch(() => {
+        reject(new Error("Error reading HTML file from ZIP archive"));
+      });
+    }).catch(() => {
+      reject(new Error("Error reading ZIP file"));
+    });
   });
 };
 
