@@ -30,13 +30,6 @@ const theme = createTheme({
     },
   },
   components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#1e1e1e",
-        },
-      },
-    },
     MuiDataGrid: {
       styleOverrides: {
         root: {
