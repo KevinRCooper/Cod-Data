@@ -19,11 +19,13 @@
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
     "@mui/material-nextjs": "^6.3.1",
+    "@mui/x-charts": "^7.23.6",
     "@mui/x-data-grid": "^7.23.6",
     "@types/cheerio": "^0.22.35",
     "@types/recharts": "^1.8.29",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
+    "date-fns": "^4.1.0",
     "jszip": "^3.10.1",
     "next": "15.1.4",
     "node-html-parser": "^7.0.1",
@@ -32,7 +34,8 @@
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
     "recharts": "^2.15.0",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.3",

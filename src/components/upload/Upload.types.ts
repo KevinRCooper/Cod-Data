@@ -1,6 +1,77 @@
 import { TableRow } from "@/types/TableRow.types";
 import { GridColDef } from "@mui/x-data-grid";
+import { z } from "zod";
 
 export type UploadProps ={
-    onDataUploaded: (columns: GridColDef[], rows: TableRow[]) => void;
-}
+    onDataUploaded: (columns: GridColDef[], rows: TableRow[], table: CodData ) => void;
+};
+
+export type CodDataRecord = z.infer<typeof codDataRecordSchema>;
+export const codDataRecordSchema = z.object({
+    "id": z.number(),
+    "UTC Timestamp": z.string(),
+    "Account Type": z.string(),
+    "Device Type": z.string(),
+    "Game Type": z.string(),
+    "Match ID": z.number(),
+    "Match Start Timestamp": z.string(),
+    "Match End Timestamp": z.string(),
+    "Map": z.string(),
+    "Team": z.string(),
+    "Match Outcome": z.string(),
+    "Operator": z.string(),
+    "Operator Skin": z.string(),
+    "Execution": z.string(),
+    "Skill": z.number(),
+    "Score": z.number(),
+    "Shots": z.number(),
+    "Hits": z.number(),
+    "Assists": z.number(),
+    "Longest Streak": z.number(),
+    "Kills": z.number(),
+    "Deaths": z.number(),
+    "Headshots": z.number(),
+    "Executions": z.number(),
+    "Suicides": z.number(),
+    "Damage Done": z.number(),
+    "Damage Taken": z.number(),
+    "Armor Collected": z.number(),
+    "Armor Equipped": z.number(),
+    "Armor Destroyed": z.number(),
+    "Ground Vehicles Used": z.number(),
+    "Air Vehicles Used": z.number(),
+    "Percentage Of Time Moving": z.string(),
+    "Total XP": z.number(),
+    "Score XP": z.number(),
+    "Challenge XP": z.number(),
+    "Match XP": z.number(),
+    "Medal XP": z.number(),
+    "Bonus XP": z.number(),
+    "Misc XP": z.number(),
+    "Accolade XP": z.number(),
+    "Weapon XP": z.number(),
+    "Operator XP": z.number(),
+    "Clan XP": z.number(),
+    "Battle Pass XP": z.number(),
+    "Rank at Start": z.number(),
+    "Rank at End": z.number(),
+    "XP at Start": z.number(),
+    "XP at End": z.number(),
+    "Score at Start": z.number(),
+    "Score at End": z.number(),
+    "Prestige at Start": z.number(),
+    "Prestige at End": z.number(),
+    "Lifetime Wall Bangs": z.number(),
+    "Lifetime Games Played": z.number(),
+    "Lifetime Time Played": z.number(),
+    "Lifetime Wins": z.number(),
+    "Lifetime Losses": z.number(),
+    "Lifetime Kills": z.number(),
+    "Lifetime Deaths": z.number(),
+    "Lifetime Hits": z.number(),
+    "Lifetime Misses": z.number(),
+    "Lifetime Near Misses": z.number(),
+});
+
+export type CodData = z.infer<typeof codDataSchema>;
+export const codDataSchema = z.array(codDataRecordSchema);
