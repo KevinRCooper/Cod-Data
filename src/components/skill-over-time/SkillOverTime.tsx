@@ -1,25 +1,34 @@
-// SkillOverTime.tsx
 import React, { useMemo } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { SkillOverTimeProps } from "./SkillOverTime.types";
-import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import { BarChart } from '@mui/x-charts/BarChart';
+import { axisClasses } from '@mui/x-charts/ChartsAxis';
 
-const CHART_HEIGHT = 300;
+const chartSetting = {
+    yAxis: [
+        {
+            label: 'SKill Rating',
+        },
+    ],
+    height: 300,
+    sx: {
+        [`.${axisClasses.left} .${axisClasses.label}`]: {
+            transform: 'translate(-10px, 0)',
+        },
+    },
+};
 
 /**
  * Formats a date string into a readable format with time.
- * Example: "2024-12-06T21:59:55Z" => "Dec 6, 2024, 21:59"
+ * Example: "2024-12-06T21:59:55Z" => "Dec 6, 2024"
  */
 const valueFormatter = (dateTime: string): string => {
     const date = new Date(dateTime);
-    // Show date + 24-hour time (no seconds). Feel free to tweak as needed.
     return date.toLocaleString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
     });
 };
 
@@ -36,26 +45,43 @@ export const SkillOverTime = ({ data = [] }: SkillOverTimeProps) => {
     }
 
     return (
-        <Stack sx={{ width: '100%' }}>
+        <Box sx={{ flexGrow: 1, p: 1 }}>
             <LineChart
+                slotProps={{ legend: { hidden: true } }}
                 xAxis={[
                     {
                         data: xAxisData,
                         scaleType: "time",
                         valueFormatter: (value) => valueFormatter(value),
-                        label: "Date",
+                        label: "Time Period",
                     },
                 ]}
                 series={[
                     {
-                        data: seriesData,
-                        label: "Skill Level",
+                        curve: "catmullRom", data: seriesData, showMark: false,
+                        label: "Skill",
                     },
                 ]}
-                /* width={CHART_WIDTH} */
-                height={CHART_HEIGHT}
-                grid={{ vertical: false, horizontal: true }}
+                grid={{ horizontal: true }}
+                {...chartSetting}
             />
-        </Stack>
+        </Box>
     );
 };
+
+export const SkillOverTimeBarChart = ({ data = [] }: SkillOverTimeProps) => {
+    if (data.length === 0) {
+        return <div>No data available</div>;
+    }
+
+    return (
+        <Box sx={{ flexGrow: 1, p: 1 }}>
+            <BarChart
+                dataset={data}
+                xAxis={[{ scaleType: "band", dataKey: "UTC Timestamp", label: "Date", valueFormatter: valueFormatter }]}
+                series={[{ dataKey: "Skill" }]}
+                {...chartSetting}
+            />
+        </Box>
+    );
+}
