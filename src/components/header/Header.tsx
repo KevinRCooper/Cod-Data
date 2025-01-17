@@ -11,7 +11,7 @@ export const Header = () => {
                 background: "linear-gradient(90deg, #3f51b5, #5c6bc0)",
                 color: "#ffffff",
                 boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                p: 2,
+                p: 0.5,
                 textAlign: "center",
             }}
             elevation={3}
@@ -21,10 +21,10 @@ export const Header = () => {
                 sx={{
                     fontWeight: "bold",
                     letterSpacing: "0.5px",
-                    fontSize: "1.75rem",
+                    fontSize: "1rem",
                 }}
             >
-                Call of Duty Data Extractor
+                Call of Duty Data Viewer
             </Typography>
         </Paper>
     );
