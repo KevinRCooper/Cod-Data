@@ -1,44 +1,14 @@
-import React from "react";
-import {useDropzone} from "react-dropzone";
-import {GridColDef} from "@mui/x-data-grid";
+import { TableRow } from "@/types/TableRow.types";
+import { extractTableFromHtml } from "@/utils/htmlTableProcessor";
+import { calculateColumnWidth, formatCellValue, isNumeric, parseFile } from "@/utils/utilities";
 import Paper from "@mui/material/Paper";
-import {extractTableFromHtml, parseHtmlFile, parseZipFile} from "@/utils/htmlTableProcessor";
-import {TableRow} from "@/types/TableRow.types";
+import { GridColDef } from "@mui/x-data-grid";
+import React from "react";
+import { useDropzone } from "react-dropzone";
+import { CodDataRecord, codDataRecordSchema, UploadProps } from "./Upload.types";
 
-interface DropzoneProps {
-    onDataUploaded: (columns: GridColDef[], rows: TableRow[]) => void;
-}
-
-export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
+export const Upload = ({ onDataUploaded }: UploadProps) => {
     const overrideNoFormatColumns = ["Match ID", "Another Column"];
-
-    const isNumeric = (value: unknown): boolean => {
-        return typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value.trim());
-    };
-
-    const calculateColumnWidth = (
-        header: string,
-        firstRowValue: unknown
-    ): number => {
-        const padding = 20;
-        const baseWidth = 10;
-        const headerLength = header.length;
-        const valueLength = firstRowValue ? firstRowValue.toString().length : 0;
-        const maxLength = Math.max(headerLength, valueLength);
-        return maxLength * baseWidth + padding;
-    };
-
-    const formatCellValue = (value: unknown, column: string) => {
-        if (overrideNoFormatColumns.includes(column)) {
-            return typeof value === "undefined" ? "" : value;
-        }
-
-        if (typeof value === "number") {
-            return new Intl.NumberFormat("en-US").format(value);
-        }
-
-        return (value as string) || "";
-    };
 
     const parseTable = (table: HTMLTableElement) => {
         const headers = Array.from(table.querySelectorAll("th")).map(
@@ -69,20 +39,19 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
             type: isNumeric(firstRow[header]) ? "number" : "string",
             sortable: true,
             renderCell: (params) => {
-                const formattedVal = formatCellValue(params.value, header);
-                return <>{formattedVal}</>;
+                const formattedVal = formatCellValue(params.value, header, overrideNoFormatColumns);
+                return <>{String(formattedVal)}</>;
             },
         }));
 
-        return { columns, rows: rowData };
-    };
+        const data = rowData
+            .map((row) => {
+                const validationResult = codDataRecordSchema.safeParse(row);
+                return validationResult.success ? validationResult.data : null;
+            })
+            .filter((row): row is CodDataRecord => row !== null); // Narrow the type to CodDataRecord
 
-    const parseFile = async (file: File): Promise<Document> => {
-        if (file.name.toLowerCase().endsWith(".zip")) {
-            return await parseZipFile(file);
-        } else {
-            return await parseHtmlFile(file);
-        }
+        return { columns, rows: rowData, table: data };
     };
 
     const onDrop = async (acceptedFiles: File[]) => {
@@ -94,14 +63,14 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
                 if (extractedTable) {
                     const tableData = parseTable(extractedTable);
                     // Pass the extracted columns and rows to the parent
-                    onDataUploaded(tableData.columns, tableData.rows);
+                    onDataUploaded(tableData.columns, tableData.rows, tableData.table);
                 } else {
                     console.warn("No table found in the uploaded HTML file.");
-                    onDataUploaded([], []);
+                    onDataUploaded([], [], []);
                 }
             } catch (error) {
                 console.error("Error parsing file:", error);
-                onDataUploaded([], []);
+                onDataUploaded([], [], []);
             }
         }
     };
@@ -128,4 +97,4 @@ export default function DropzoneComponent({ onDataUploaded }: DropzoneProps) {
             <p>Drag and drop an HTML/ZIP file here, or click to select one</p>
         </Paper>
     );
-}
+};
