@@ -9,9 +9,9 @@ export const Footer = () => {
                 position: "sticky",
                 bottom: 0,
                 zIndex: 1000,
-                background: "linear-gradient(90deg, #3f51b5, #5c6bc0)", // Match header gradient
-                color: "#ffffff", // White text for contrast
-                boxShadow: "0px -2px 4px rgba(0, 0, 0, 0.1)", // Subtle shadow for separation
+                background: "linear-gradient(90deg, #3f51b5, #5c6bc0)", 
+                color: "#ffffff",
+                boxShadow: "0px -2px 4px rgba(0, 0, 0, 0.1)", 
                 p: 1,
                 textAlign: "center",
             }}
