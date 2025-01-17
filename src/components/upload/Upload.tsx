@@ -1,11 +1,11 @@
 import { TableRow } from "@/types/TableRow.types";
-import { extractTableFromHtml, parseHtmlFile, parseZipFile } from "@/utils/htmlTableProcessor";
-import { calculateColumnWidth, formatCellValue, isNumeric } from "@/utils/utilities";
+import { extractTableFromHtml } from "@/utils/htmlTableProcessor";
+import { calculateColumnWidth, formatCellValue, isNumeric, parseFile } from "@/utils/utilities";
 import Paper from "@mui/material/Paper";
 import { GridColDef } from "@mui/x-data-grid";
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadProps } from "./Upload.types";
+import { CodDataRecord, codDataRecordSchema, UploadProps } from "./Upload.types";
 
 export const Upload = ({ onDataUploaded }: UploadProps) => {
     const overrideNoFormatColumns = ["Match ID", "Another Column"];
@@ -44,15 +44,14 @@ export const Upload = ({ onDataUploaded }: UploadProps) => {
             },
         }));
 
-        return { columns, rows: rowData };
-    };
+        const data = rowData
+            .map((row) => {
+                const validationResult = codDataRecordSchema.safeParse(row);
+                return validationResult.success ? validationResult.data : null;
+            })
+            .filter((row): row is CodDataRecord => row !== null); // Narrow the type to CodDataRecord
 
-    const parseFile = async (file: File): Promise<Document> => {
-        if (file.name.toLowerCase().endsWith(".zip")) {
-            return await parseZipFile(file);
-        } else {
-            return await parseHtmlFile(file);
-        }
+        return { columns, rows: rowData, table: data };
     };
 
     const onDrop = async (acceptedFiles: File[]) => {
@@ -64,14 +63,14 @@ export const Upload = ({ onDataUploaded }: UploadProps) => {
                 if (extractedTable) {
                     const tableData = parseTable(extractedTable);
                     // Pass the extracted columns and rows to the parent
-                    onDataUploaded(tableData.columns, tableData.rows);
+                    onDataUploaded(tableData.columns, tableData.rows, tableData.table);
                 } else {
                     console.warn("No table found in the uploaded HTML file.");
-                    onDataUploaded([], []);
+                    onDataUploaded([], [], []);
                 }
             } catch (error) {
                 console.error("Error parsing file:", error);
-                onDataUploaded([], []);
+                onDataUploaded([], [], []);
             }
         }
     };

@@ -1,0 +1,7 @@
+.skill-over-time-container {
+    width: 100%;
+    max-width: 1000px; /* Optional: limit maximum width */
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  

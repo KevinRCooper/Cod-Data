@@ -1,3 +1,5 @@
+import { parseHtmlFile, parseZipFile } from "./htmlTableProcessor";
+
 export const isNumeric = (value: unknown): boolean => {
     return typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value.trim());
 };
@@ -24,4 +26,12 @@ export const formatCellValue = (value: unknown, column: string, columnOverrides:
     }
 
     return (value as string) || "";
+};
+
+export const parseFile = async (file: File): Promise<Document> => {
+    if (file.name.toLowerCase().endsWith(".zip")) {
+        return await parseZipFile(file);
+    };
+
+    return await parseHtmlFile(file);
 };
