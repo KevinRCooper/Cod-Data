@@ -13,11 +13,9 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { TableRow } from "@/types/TableRow.types";
 
 import { Introduction } from "@/components/introduction/Introduction";
-import { SkillOverTime } from "@/components/skill-over-time/SkillOverTime";
-import Stats from "@/components/stats/Stats";
+import StatsGroup from "@/components/stats/Stats";
 import { Upload } from "@/components/upload/Upload";
 import { CodData } from "@/components/upload/Upload.types";
-import { getAverageDamageDone, getAverageDamageTaken, getAverageDeathsPerMatch, getAverageKillsPerMatch, getAveragePercentageOfTimeMoving, getAverageScore, getAverageSkill, getHighestPrestige, getHighestStreak, getKillDeathRatio, getMostPlayedGameType, getMostPlayedMap, getTotalDeaths, getTotalKills, getTotalMatches, getWinLossRatio } from "@/utils/stats";
 
 const HomePage = () => {
   const [columns, setColumns] = useState<GridColDef[]>([]);
@@ -34,15 +32,6 @@ const HomePage = () => {
     setRows(newRows);
     setIsDropzoneVisible(false);
     setData(table);
-  };
-
-  const getSkillData = (table: CodData) => {
-    return table
-      .map((record) => ({
-        ["UTC Timestamp"]: record["UTC Timestamp"],
-        Skill: record.Skill,
-      }))
-      .reverse(); // Reverse array order as data comes in reverse chronological order
   };
 
   const exportToCSV = () => {
@@ -88,25 +77,7 @@ const HomePage = () => {
             <Grid sx={{ gridColumn: { xs: "1 / -1", md: "span 8" } }}>
               {/* Visualization + Table */}
               <Paper sx={{ p: 0, mb: 3 }}>
-                <Stats stats={[
-                  { name: "Matches", value: getTotalMatches(data ?? []) },
-                  { name: "Avg. Skill", value: getAverageSkill(data ?? []) },
-                  { name: "Win/Loss Ratio", value: getWinLossRatio(data ?? []) },
-                  { name: "Avg. Score Per Match", value: getAverageScore(data ?? []) },
-                  { name: "Kills", value: getTotalKills(data ?? []) },
-                  { name: "Avg. Kills Per Match", value: getAverageKillsPerMatch(data ?? []) },
-                  { name: "Deaths", value: getTotalDeaths(data ?? []) },
-                  { name: "Avg. Deaths Per Match", value: getAverageDeathsPerMatch(data ?? []) },
-                  { name: "Kill/Death Ratio", value: (getKillDeathRatio(data ?? [])) },
-                  { name: "Highest Streak", value: getHighestStreak(data ?? []) },
-                  { name: "Avg. % Of Time Moving", value: getAveragePercentageOfTimeMoving(data ?? []) },
-                  { name: "Avg. Damage Done", value: getAverageDamageDone(data ?? []).toLocaleString() },
-                  { name: "Avg. Damage Taken", value: getAverageDamageTaken(data ?? []).toLocaleString() },
-                  { name: "Most Played Map", value: getMostPlayedMap(data ?? []) },
-                  { name: "Most Played Game Type", value: getMostPlayedGameType(data ?? []) },
-                  { name: "Highest Prestige", value: getHighestPrestige(data ?? []) },
-                ]} />
-                <SkillOverTime data={getSkillData(data ?? [])} />
+                <StatsGroup data={data ?? []} />
               </Paper>
 
               <TableContainer component={Paper}>
