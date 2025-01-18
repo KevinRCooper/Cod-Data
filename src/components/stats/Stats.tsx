@@ -28,7 +28,7 @@ const getSkillData = (table: CodData) => {
         .reverse(); // Reverse array order as data comes in reverse chronological order
 };
 
-const Stats = ({ stats }: StatsProps) => {
+export const Stats = ({ stats }: StatsProps) => {
     return (
         <Box sx={{ flexGrow: 1, overflow: "hidden" }} p={1}>
             <Grid container spacing={1} sx={{ justifyContent: "center" }}>
