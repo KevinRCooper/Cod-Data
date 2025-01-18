@@ -30,6 +30,14 @@ export const getKillDeathRatio = (data: CodData) => {
     return result.toFixed(2).toLocaleString();
 };
 
+export const getTotalWins = (data: CodData) => {
+    return data.filter((record) => record["Match Outcome"] === "win").length;
+};
+
+export const getTotalLosses = (data: CodData) => {
+    return data.filter((record) => record["Match Outcome"] === "loss").length;
+};
+
 export const getWinLossRatio = (data: CodData) => {
     const totalWins = data.filter((record) => record["Match Outcome"] === "win").length;
     const totalLosses = data.filter((record) => record["Match Outcome"] === "loss").length;
@@ -110,3 +118,60 @@ export const getMostPlayedGameType = (data: CodData) => {
 export const getHighestPrestige = (data: CodData) => {
     return data.reduce((highest, record) => Math.max(highest, record["Prestige at End"]), 0).toLocaleString();
 };
+
+export const getOverallTimePlayed = (data: CodData): number => {
+    const totalMilliseconds = data.reduce((total, record) => {
+        const startTime = new Date(record["Match Start Timestamp"]);
+        const endTime = new Date(record["Match End Timestamp"]);
+        const matchDuration = endTime.getTime() - startTime.getTime(); // Duration in milliseconds
+        return total + matchDuration;
+    }, 0);
+
+    // Convert milliseconds to hours
+    const totalHours = totalMilliseconds / (1000 * 60 * 60);
+    return parseFloat(totalHours.toFixed(2)); // Return rounded to 2 decimal places
+};
+
+export const getLongestWinStreak = (data: CodData): number => {
+    let currentStreak = 0;
+    let longestStreak = 0;
+
+    for (const record of data) {
+        if (record["Match Outcome"].toLowerCase() === "win") {
+            currentStreak++;
+            longestStreak = Math.max(longestStreak, currentStreak);
+        } else {
+            currentStreak = 0; // Reset streak on loss or other outcomes
+        }
+    }
+
+    return longestStreak;
+};
+
+export const getLongestLosingStreak = (data: CodData): number => {
+    let currentStreak = 0;
+    let longestStreak = 0;
+
+    for (const record of data) {
+        if (record["Match Outcome"].toLowerCase() === "loss") {
+            currentStreak++;
+            longestStreak = Math.max(longestStreak, currentStreak);
+        } else {
+            currentStreak = 0; // Reset streak on loss or other outcomes
+        }
+    }
+
+    return longestStreak;
+};
+
+export const getAccuracy = (data: CodData): number => {
+    const totalShots = data.reduce((total, record) => total + record["Shots"], 0);
+    const totalHits = data.reduce((total, record) => total + record["Hits"], 0);
+
+    if (totalShots === 0) return 0; // Avoid division by zero
+
+    const accuracy = (totalHits / totalShots) * 100;
+    return parseFloat(accuracy.toFixed(2)); // Round to 2 decimal places
+};
+
+
